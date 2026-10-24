@@ -1,1 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Apartment bookings 2026</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1F6F6B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bookings">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4F3;--surface:#FFFFFF;--surface2:#F7F9F8;--ink:#15302E;--muted:#5F7270;--line:#DDE3E1;
+  --primary:#1F6F6B;--primary-ink:#FFFFFF;--danger:#B5543C;--free:#FFFFFF;--past:#EEF1F0;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#132322;--surface:#1A2E2D;--surface2:#203735;--ink:#E6EFEE;--muted:#93A8A5;--line:#2C4543;--primary:#5DB3AC;--primary-ink:#0E1F1E;--danger:#E08A70;--free:#1A2E2D;--past:#172826}
+}
+:root[data-theme="dark"]{--bg:#132322;--surface:#1A2E2D;--surface2:#203735;--ink:#E6EFEE;--muted:#93A8A5;--line:#2C4543;--primary:#5DB3AC;--primary-ink:#0E1F1E;--danger:#E08A70;--free:#1A2E2D;--past:#172826}
+:root[data-theme="light"]{--bg:#F2F4F3;--surface:#FFFFFF;--surface2:#F7F9F8;--ink:#15302E;--muted:#5F7270;--line:#DDE3E1;--primary:#1F6F6B;--primary-ink:#FFFFFF;--danger:#B5543C;--free:#FFFFFF;--past:#EEF1F0}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+h1{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:clamp(30px,8vw,44px);line-height:1.1;margin:0 0 4px}
+h2{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:24px;margin:40px 0 12px}
+.sub{color:var(--muted);margin:0 0 20px}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:11px 16px;font-weight:600}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.btn-primary{background:var(--primary);color:var(--primary-ink)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 50%,transparent)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat span{color:var(--muted);font-size:13px}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:10px 0;margin:0 -16px;padding-left:16px;padding-right:16px;border-bottom:1px solid var(--line)}
+.bar-row{display:flex;gap:10px;align-items:center}
+.months-nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.months-nav::-webkit-scrollbar{display:none}
+.months-nav a{flex:none;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600}
+.hint{color:var(--muted);font-size:14px;margin:10px 0 0;min-height:1.5em}
+.hint.active{color:var(--primary);font-weight:600}
+
+.year{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:16px}
+.month{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 12px 12px}
+.m-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 4px 8px}
+.m-head h3{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:20px;margin:0}
+.m-head span{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:17px 3px;padding-top:6px}
+.dow{text-align:center;font-size:11px;color:var(--muted);font-weight:600;padding-bottom:2px}
+.day{position:relative;aspect-ratio:1;border-radius:8px;border:1px solid transparent;background:var(--free);color:var(--ink);font-size:14px;font-weight:500;padding:0;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.day.free{border-color:var(--line)}
+.day.past{background:var(--past);color:var(--muted)}
+.day.booked{color:#fff;font-weight:700;border-color:transparent}
+.day.half{font-weight:700}
+.day.today{box-shadow:inset 0 0 0 2px var(--primary)}
+.day.sel{background:color-mix(in srgb,var(--primary) 22%,var(--free));border-color:var(--primary)}
+.day.pending::after{content:"";position:absolute;inset:0;border-radius:8px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.28) 0 4px,transparent 4px 8px);pointer-events:none}
+.cloud{position:absolute;left:1px;text-align:center!important;bottom:calc(100% - 3px);z-index:2;background:var(--surface);color:var(--ink);border:1.5px solid var(--c);border-radius:9px;padding:0 6px;font-size:10.5px;font-weight:700;line-height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 5px rgba(0,0,0,.14);pointer-events:none;text-align:left}
+.cloud::before{content:"";position:absolute}
+.cloud-tail{position:absolute;left:9px;bottom:calc(100% - 7px);width:7px;height:7px;background:var(--surface);border-right:1.5px solid var(--c);border-bottom:1.5px solid var(--c);transform:rotate(45deg);z-index:3;pointer-events:none}
+.btn-up{position:relative;background:var(--surface);color:var(--ink);border:1px solid var(--line);white-space:nowrap}
+.btn-up b{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--primary);color:var(--primary-ink);font-size:12px;line-height:20px}
+.up-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.up-head h3{margin:0}
+.up-month{font-size:13px;font-weight:700;color:var(--muted);margin:14px 2px 6px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:13px;margin-top:10px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+
+.list{display:flex;flex-direction:column;gap:8px}
+.bk{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;width:100%;color:var(--ink);font-weight:400}
+.bk .sw{width:10px;align-self:stretch;border-radius:6px;flex:none}
+.bk .main{flex:1;min-width:0}
+.bk .nm{font-weight:700;font-size:16px}
+.bk .dt{color:var(--muted);font-size:14px}
+.bk .rt{text-align:right;font-size:14px;white-space:nowrap}
+.bk .rt b{display:block;font-size:16px;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:1px}
+.tag.pending{background:color-mix(in srgb,#B0822A 20%,transparent);color:#B0822A}
+.empty{color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:18px;text-align:center}
+.status{color:var(--muted);font-size:12px;text-align:center;margin-top:36px}
+
+.modal{position:fixed;inset:0;background:rgba(8,18,17,.55);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.open{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));animation:up .25s ease-out}
+@media (min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.sheet h3{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:24px;margin:0 0 14px}
+.f{display:block;margin-bottom:12px}
+.f span{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.f input,.f textarea{font:inherit;color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.f textarea{min-height:70px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{flex:1;background:transparent;color:var(--muted);padding:8px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.nights{font-size:14px;color:var(--muted);margin:-4px 0 12px}
+.warn{background:color-mix(in srgb,var(--danger) 12%,transparent);color:var(--danger);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;margin-bottom:12px}
+.actions{display:flex;gap:10px;margin-top:6px}
+.actions .btn-primary{flex:1}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 16px;font-size:15px}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0;word-break:break-word}
+.dl a{color:var(--primary)}
+.d-title{display:flex;align-items:center;gap:10px}
+.d-title i{width:14px;height:14px;border-radius:4px;flex:none}
+</style>
+</head>
+<body>
+<main>
+  <h1>Apartment bookings 2026</h1>
+  <p class="sub">Tap a check-in day, then a check-out day, to add a booking. Tap a booked day to see who's staying.</p>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="bar">
+    <div class="bar-row">
+      <nav class="months-nav" id="monthsNav" aria-label="Jump to month"></nav>
+      <button class="btn-up" id="upBtn">Upcoming<b id="upCount">0</b></button>
+      <button class="btn-primary" id="newBtn">+ New</button>
+    </div>
+    <p class="hint" id="hint"></p>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:#C8423A"></i>Booked</span>
+    <span><i style="background:#C8423A;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 3px,transparent 3px 6px)"></i>Pending</span>
+    <span><i style="background:linear-gradient(135deg,transparent 50%,#C8423A 50%);border:1px solid var(--line)"></i>Check-in</span>
+    <span><i style="background:linear-gradient(135deg,#C8423A 50%,transparent 50%);border:1px solid var(--line)"></i>Check-out</span>
+  </div>
+
+  <div class="year" id="year"></div>
+
+  <h2>Upcoming stays</h2>
+  <div class="list" id="upcoming"></div>
+  <h2>Past stays</h2>
+  <div class="list" id="past"></div>
+
+  <p class="status" id="status">Saving on this device</p>
+</main>
+
+<div class="modal" id="formModal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+  <div class="sheet">
+    <h3 id="formTitle">New booking</h3>
+    <label class="f"><span>Guest name</span><input id="fName" maxlength="60" autocomplete="off"></label>
+    <div class="two">
+      <label class="f"><span>Check-in</span><input id="fFrom" type="date" min="2026-01-01" max="2026-12-31"></label>
+      <label class="f"><span>Check-out</span><input id="fTo" type="date" min="2026-01-02" max="2027-01-31"></label>
+    </div>
+    <p class="nights" id="fNights"></p>
+    <div class="warn" id="fWarn" hidden></div>
+    <div class="two">
+      <label class="f"><span>Guests</span><input id="fGuests" type="number" inputmode="numeric" min="1" max="20" placeholder="2"></label>
+      <label class="f"><span>Total price (€)</span><input id="fPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label>
+    </div>
+    <div class="two">
+      <label class="f"><span>Phone</span><input id="fPhone" type="tel" maxlength="30" autocomplete="off"></label>
+      <label class="f"><span>Email</span><input id="fEmail" type="email" maxlength="80" autocomplete="off"></label>
+    </div>
+    <div class="f"><span>Status</span>
+      <div class="seg" id="fStatus">
+        <button type="button" data-v="confirmed" aria-pressed="true">Confirmed</button>
+        <button type="button" data-v="pending" aria-pressed="false">Pending</button>
+      </div>
+    </div>
+    <label class="f"><span>Notes</span><textarea id="fNotes" maxlength="500" placeholder="Arrival time, deposit paid, parking…"></textarea></label>
+    <div class="actions">
+      <button class="btn-ghost" id="fCancel">Cancel</button>
+      <button class="btn-primary" id="fSave">Save booking</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="upModal" role="dialog" aria-modal="true" aria-labelledby="upTitle">
+  <div class="sheet">
+    <div class="up-head"><h3 id="upTitle">Upcoming reservations</h3><button class="btn-ghost" id="upClose">Close</button></div>
+    <div id="upSummary" class="nights" style="margin:0 0 6px"></div>
+    <div class="list" id="upList"></div>
+  </div>
+</div>
+
+<div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="dName">
+  <div class="sheet">
+    <h3 class="d-title"><i id="dSw"></i><span id="dName"></span></h3>
+    <dl class="dl" id="dList"></dl>
+    <div class="actions">
+      <button class="btn-danger" id="dDel">Delete</button>
+      <button class="btn-ghost" id="dClose">Close</button>
+      <button class="btn-primary" id="dEdit">Edit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const YEAR=2026;
+const PALETTE=["#1F6F6B","#B5543C","#3F5E9C","#8A5A9E","#A7782A","#4E8A4A","#A04868","#2F7F9E","#6B5B45","#5C6FB0"];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW=["Mo","Tu","We","Th","Fr","Sa","Su"];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur=n=>"€"+Number(n||0).toLocaleString("en-GB",{minimumFractionDigits:0,maximumFractionDigits:2});
+
+/* ---- dates (UTC day math) ---- */
+const toDay=s=>{const [y,m,d]=s.split("-").map(Number);return Date.UTC(y,m-1,d)/864e5};
+const fromDay=n=>{const d=new Date(n*864e5);return d.toISOString().slice(0,10)};
+const iso=(y,m,d)=>`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+const nice=s=>new Date(toDay(s)*864e5).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
+const now=new Date();const TODAY=iso(now.getFullYear(),now.getMonth(),now.getDate());
+
+/* ---- data ---- */
+let bookings=[];let db=null,col=null;
+function loadLocal(){try{const s=localStorage.getItem("apt-bookings-2026");if(s)bookings=JSON.parse(s)}catch(e){}}
+function saveLocal(){try{localStorage.setItem("apt-bookings-2026",JSON.stringify(bookings))}catch(e){}}
+async function persist(b){saveLocal();if(col){try{await col.doc(b.id).set(b)}catch(e){$("status").textContent="Couldn't save online just now. Kept on this device."}}}
+async function remove(id){saveLocal();if(col){try{await col.doc(id).delete()}catch(e){$("status").textContent="Couldn't delete online just now."}}}
+async function connect(){
+  try{
+    if(!window.claude||!claude.use)return;
+    db=await claude.use("db");if(!db)return;
+    col=db.collection("bookings");
+    let first=true;
+    col.onSnapshot(snap=>{
+      const remote=snap.docs.map(d=>({...d.data(),id:d.id}));
+      if(first&&!remote.length&&bookings.length){bookings.forEach(b=>col.doc(b.id).set(b).catch(()=>{}))}
+      else bookings=remote;
+      first=false;saveLocal();
+      $("status").textContent="Saved online. Only you can see this unless you share it.";
+      render();
+    },()=>{$("status").textContent="Saving on this device"});
+  }catch(e){}
+}
+const newId=()=>"b"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const RED="#C8423A";
+function colorFor(b){return RED}
+function nextColor(){const used=bookings.map(b=>b.color);return PALETTE.find(c=>!used.includes(c))||PALETTE[bookings.length%PALETTE.length]}
+const nightsOf=b=>toDay(b.to)-toDay(b.from);
+function overlaps(from,to,ignore){const a=toDay(from),z=toDay(to);return bookings.filter(b=>b.id!==ignore&&a<toDay(b.to)&&toDay(b.from)<z)}
+
+/* ---- calendar ---- */
+let selStart=null;
+function dayMap(){
+  const night={},out={};
+  for(const b of bookings){
+    const a=toDay(b.from),z=toDay(b.to);
+    for(let d=a;d<z;d++)night[fromDay(d)]=b;
+    out[b.to]=b;
+  }
+  return {night,out};
+}
+function renderNav(){
+  $("monthsNav").innerHTML=MONTHS.map((m,i)=>`<a href="#m${i}">${m.slice(0,3)}</a>`).join("");
+}
+function renderYear(){
+  const {night,out}=dayMap();
+  let html="";
+  for(let m=0;m<12;m++){
+    const first=new Date(Date.UTC(YEAR,m,1)),days=new Date(Date.UTC(YEAR,m+1,0)).getUTCDate();
+    const lead=(first.getUTCDay()+6)%7;
+    let booked=0;for(let d=1;d<=days;d++)if(night[iso(YEAR,m,d)])booked++;
+    html+=`<section class="month" id="m${m}"><div class="m-head"><h3>${MONTHS[m]}</h3><span>${booked?`${booked} of ${days} nights booked`:"All free"}</span></div><div class="grid">`;
+    html+=DOW.map(d=>`<div class="dow">${d}</div>`).join("");
+    for(let i=0;i<lead;i++)html+="<div></div>";
+    for(let d=1;d<=days;d++){
+      const ds=iso(YEAR,m,d),n=night[ds],o=out[ds];
+      const isStart=n&&n.from===ds;
+      let cls="day",style="",label=`${d} ${MONTHS[m]}`;
+      if(n&&!isStart){const c=colorFor(n);cls+=" booked";style=`background:${c}`;if(n.status==="pending")cls+=" pending";label+=`, ${n.name} staying`}
+      else if(n&&isStart&&o){cls+=" booked";style=`background:linear-gradient(135deg,${RED} 48%,var(--free) 48% 52%,${RED} 52%)`;label+=`, ${o.name} leaves, ${n.name} arrives`}
+      else if(n&&isStart){cls+=" half";style=`background:linear-gradient(135deg,var(--free) 50%,${colorFor(n)} 50%)`;label+=`, ${n.name} arrives`;if(n.status==="pending")cls+=" pending"}
+      else if(o){cls+=" half";style=`background:linear-gradient(135deg,${colorFor(o)} 50%,var(--free) 50%)`;label+=`, ${o.name} leaves`}
+      else{cls+=ds<TODAY?" past":" free";label+=", free"}
+      if(ds===TODAY)cls+=" today";
+      let cloud="";
+      if(n){
+        const col=(lead+d-1)%7;
+        if(isStart||col===0||d===1){
+          const rowEnd=Math.min(d+(6-col),days);          // last day number in this row
+          const outD=toDay(n.to)-toDay(iso(YEAR,m,1))+1;    // checkout as day number of this month
+          const outHere=outD<=rowEnd;
+          const endD=outHere?outD:rowEnd;
+          const gaps=endD-d;
+          const w=gaps+(outHere?0.5:1)-(isStart?0.5:0);
+          const leftCss=isStart?"calc(50% + 1px)":"1px";
+          cloud=`<span class="cloud-tail" style="--c:${RED};left:${isStart?"calc(50% + 6px)":"9px"}"></span><span class="cloud" style="--c:${RED};left:${leftCss};width:calc(${w*100}% + ${gaps*3}px - 2px)">${esc(n.name)}</span>`;
+        }
+      }
+      if(selStart===ds)cls+=" sel";
+      html+=`<button class="${cls}" style="${style}" data-d="${ds}" aria-label="${esc(label)}" title="${esc(n?n.name:o?o.name+" leaves":"")}">${cloud}${d}</button>`;
+    }
+    html+="</div></section>";
+  }
+  $("year").innerHTML=html;
+}
+function renderStats(){
+  const a=toDay(`${YEAR}-01-01`),z=toDay(`${YEAR+1}-01-01`);
+  let nights=0,income=0,pending=0;
+  for(const b of bookings){
+    const s=Math.max(a,toDay(b.from)),e=Math.min(z,toDay(b.to));
+    if(e>s)nights+=e-s;
+    if(b.status==="pending")pending++;else income+=Number(b.price)||0;
+  }
+  $("stats").innerHTML=`
+    <div class="stat"><b>${bookings.length}</b><span>Bookings${pending?`, ${pending} pending`:""}</span></div>
+    <div class="stat"><b>${nights}</b><span>Nights booked</span></div>
+    <div class="stat"><b>${Math.round(nights/365*100)}%</b><span>Occupancy</span></div>
+    <div class="stat"><b>${eur(income)}</b><span>Confirmed income</span></div>`;
+}
+function bkRow(b){
+  const n=nightsOf(b);
+  return `<button class="bk" data-id="${b.id}"><span class="sw" style="background:${colorFor(b)}"></span>
+    <span class="main"><span class="nm">${esc(b.name)}${b.status==="pending"?'<span class="tag pending">Pending</span>':""}</span>
+    <span class="dt" style="display:block">${nice(b.from)} → ${nice(b.to)}</span></span>
+    <span class="rt"><b>${b.price?eur(b.price):""}</b>${n} night${n>1?"s":""}${b.guests?`, ${b.guests} guest${b.guests>1?"s":""}`:""}</span></button>`;
+}
+function renderLists(){
+  const sorted=[...bookings].sort((x,y)=>x.from<y.from?-1:1);
+  const up=sorted.filter(b=>b.to>=TODAY),past=sorted.filter(b=>b.to<TODAY).reverse();
+  $("upcoming").innerHTML=up.length?up.map(bkRow).join(""):`<div class="empty">No upcoming stays yet. Tap two days on the calendar to add one.</div>`;
+  $("past").innerHTML=past.length?past.map(bkRow).join(""):`<div class="empty">No past stays yet.</div>`;
+}
+function renderHint(){
+  const h=$("hint");
+  if(selStart){h.className="hint active";h.innerHTML=`Check-in ${nice(selStart)}. Now tap the check-out day. <a href="#" id="cancelSel" style="color:var(--muted)">Cancel</a>`}
+  else{h.className="hint";h.textContent="Tap a free day to start a booking."}
+}
+function upcomingList(){return [...bookings].filter(b=>b.to>=TODAY).sort((x,y)=>x.from<y.from?-1:1)}
+function renderUpModal(){
+  const up=upcomingList();
+  $("upCount").textContent=up.length;
+  const nights=up.reduce((s,b)=>s+nightsOf(b),0),money=up.filter(b=>b.status!=="pending").reduce((s,b)=>s+(Number(b.price)||0),0);
+  $("upSummary").textContent=up.length?`${up.length} reservation${up.length>1?"s":""}, ${nights} nights, ${eur(money)} confirmed`:"";
+  if(!up.length){$("upList").innerHTML=`<div class="empty">No upcoming reservations.</div>`;return}
+  let html="",last="";
+  for(const b of up){
+    const key=b.from.slice(0,7);
+    if(key!==last){last=key;html+=`<div class="up-month">${MONTHS[Number(key.slice(5,7))-1]} ${key.slice(0,4)}</div>`}
+    const live=b.from<=TODAY?' <span class="tag" style="background:color-mix(in srgb,var(--primary) 18%,transparent);color:var(--primary)">Staying now</span>':"";
+    html+=bkRow(b).replace('</span>\n    <span class="dt"',`${live}</span>\n    <span class="dt"`);
+  }
+  $("upList").innerHTML=html;
+}
+function render(){renderStats();renderYear();renderLists();renderHint();renderUpModal()}
+$("upBtn").onclick=()=>{renderUpModal();$("upModal").classList.add("open")};
+$("upClose").onclick=()=>$("upModal").classList.remove("open");
+$("upList").addEventListener("click",e=>{const b=e.target.closest("[data-id]");if(!b)return;const bk=bookings.find(x=>x.id===b.dataset.id);if(bk){$("upModal").classList.remove("open");openDetail(bk)}});
+$("upModal").addEventListener("click",e=>{if(e.target===$("upModal"))$("upModal").classList.remove("open")});
+
+/* ---- interactions ---- */
+$("year").addEventListener("click",e=>{
+  const b=e.target.closest("[data-d]");if(!b)return;
+  const ds=b.dataset.d,{night}=dayMap(),n=night[ds];
+  if(!selStart){
+    if(n){openDetail(n);return}
+    selStart=ds;render();return;
+  }
+  if(ds<=selStart){if(n){selStart=null;render();openDetail(n);return}selStart=ds;render();return}
+  const from=selStart;selStart=null;render();
+  openForm(null,{from,to:ds});
+});
+document.addEventListener("click",e=>{if(e.target.id==="cancelSel"){e.preventDefault();selStart=null;render()}});
+["upcoming","past"].forEach(id=>$(id).addEventListener("click",e=>{const b=e.target.closest("[data-id]");if(b){const bk=bookings.find(x=>x.id===b.dataset.id);if(bk)openDetail(bk)}}));
+$("newBtn").onclick=()=>{selStart=null;render();openForm(null,{})};
+
+/* ---- form ---- */
+let editing=null,fStatus="confirmed";
+function setStatus(v){fStatus=v;$("fStatus").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v?"true":"false"))}
+$("fStatus").addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(b)setStatus(b.dataset.v)});
+function openForm(b,pre){
+  editing=b;
+  $("formTitle").textContent=b?"Edit booking":"New booking";
+  const v=b||pre||{};
+  $("fName").value=v.name||"";$("fFrom").value=v.from||"";$("fTo").value=v.to||"";
+  $("fGuests").value=v.guests||"";$("fPrice").value=v.price||"";$("fPhone").value=v.phone||"";$("fEmail").value=v.email||"";$("fNotes").value=v.notes||"";
+  setStatus(v.status||"confirmed");
+  ["fName","fFrom","fTo"].forEach(i=>$(i).style.borderColor="");
+  checkForm();
+  $("formModal").classList.add("open");
+  setTimeout(()=>$("fName").focus(),200);
+}
+function closeForm(){$("formModal").classList.remove("open");editing=null}
+function checkForm(){
+  const f=$("fFrom").value,t=$("fTo").value,w=$("fWarn");
+  $("fNights").textContent="";w.hidden=true;
+  if(f&&t){
+    const n=toDay(t)-toDay(f);
+    if(n<=0){w.hidden=false;w.textContent="Check-out must be after check-in.";return false}
+    $("fNights").textContent=`${n} night${n>1?"s":""}: ${nice(f)} to ${nice(t)}`;
+    const clash=overlaps(f,t,editing&&editing.id);
+    if(clash.length){w.hidden=false;w.textContent=`These dates overlap with ${clash.map(c=>`${c.name} (${nice(c.from)} → ${nice(c.to)})`).join(", ")}.`;return false}
+  }
+  return true;
+}
+["fFrom","fTo"].forEach(i=>$(i).addEventListener("change",()=>{
+  if(i==="fFrom"&&$("fFrom").value&&(!$("fTo").value||$("fTo").value<=$("fFrom").value))$("fTo").value=fromDay(toDay($("fFrom").value)+1);
+  checkForm();
+}));
+$("fCancel").onclick=closeForm;
+$("fSave").onclick=()=>{
+  const name=$("fName").value.trim(),from=$("fFrom").value,to=$("fTo").value;
+  let bad=false;
+  [["fName",name],["fFrom",from],["fTo",to]].forEach(([i,v])=>{$(i).style.borderColor=v?"":"var(--danger)";if(!v)bad=true});
+  if(bad){(!name?$("fName"):!from?$("fFrom"):$("fTo")).focus();return}
+  if(!checkForm())return;
+  const b={
+    id:editing?editing.id:newId(),
+    color:editing?colorFor(editing):nextColor(),
+    name,from,to,status:fStatus,
+    guests:Number($("fGuests").value)||null,
+    price:$("fPrice").value!==""?Math.round(parseFloat($("fPrice").value)*100)/100:null,
+    phone:$("fPhone").value.trim(),email:$("fEmail").value.trim(),notes:$("fNotes").value.trim(),
+    created:editing?.created||Date.now()
+  };
+  const i=bookings.findIndex(x=>x.id===b.id);
+  if(i>=0)bookings[i]=b;else bookings.push(b);
+  closeForm();render();persist(b);
+  const m=Number(from.slice(5,7))-1;
+  if(from.startsWith(String(YEAR)))setTimeout(()=>document.getElementById("m"+m)?.scrollIntoView({behavior:"smooth",block:"start"}),60);
+};
+
+/* ---- detail ---- */
+let shown=null,delArmed=false,delTimer=null;
+function openDetail(b){
+  shown=b;delArmed=false;$("dDel").textContent="Delete";
+  $("dSw").style.background=colorFor(b);$("dName").textContent=b.name;
+  const n=nightsOf(b);
+  const rows=[
+    ["Status",b.status==="pending"?"Pending":"Confirmed"],
+    ["Check-in",esc(nice(b.from))],["Check-out",esc(nice(b.to))],["Nights",n],
+    b.guests?["Guests",b.guests]:null,
+    b.price!=null&&b.price!==""?["Price",`${eur(b.price)} <span style="color:var(--muted)">(${eur(b.price/n)} per night)</span>`]:null,
+    b.phone?["Phone",`<a href="tel:${esc(b.phone.replace(/\s/g,""))}">${esc(b.phone)}</a>`]:null,
+    b.email?["Email",`<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>`]:null,
+    b.notes?["Notes",esc(b.notes).replace(/\n/g,"<br>")]:null
+  ].filter(Boolean);
+  $("dList").innerHTML=rows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("");
+  $("detailModal").classList.add("open");
+}
+function closeDetail(){$("detailModal").classList.remove("open");shown=null;clearTimeout(delTimer)}
+$("dClose").onclick=closeDetail;
+$("dEdit").onclick=()=>{const b=shown;closeDetail();openForm(b)};
+$("dDel").onclick=()=>{
+  if(!delArmed){delArmed=true;$("dDel").textContent="Tap again to delete";delTimer=setTimeout(()=>{delArmed=false;$("dDel").textContent="Delete"},4000);return}
+  const id=shown.id;bookings=bookings.filter(b=>b.id!==id);closeDetail();render();remove(id);
+};
+[$("formModal"),$("detailModal")].forEach(m=>m.addEventListener("click",e=>{if(e.target===m){m.id==="formModal"?closeForm():closeDetail()}}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeForm();closeDetail();$("upModal").classList.remove("open");if(selStart){selStart=null;render()}}});
+
+/* ---- start ---- */
+loadLocal();renderNav();render();
+if(TODAY.startsWith(String(YEAR))){const m=Number(TODAY.slice(5,7))-1;if(m>0)setTimeout(()=>document.getElementById("m"+m)?.scrollIntoView({block:"start"}),50)}
+connect();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
